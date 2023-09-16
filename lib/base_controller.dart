@@ -1,16 +1,39 @@
-import 'package:sell/data/models/product.dart';
+// import 'package:sell/data/models/product.dart';
 
-import 'Item/item.dart';
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get_storage/get_storage.dart';
+
+import 'models/app_user.dart';
+import 'models/item.dart';
 
 class BaseController{
 
- static List<Product> cartItems=[];
+ static List<Item> cartItems=[];
  // static List<Item> favItems=allProducts.where((element) => element.favorite>0).toList();
 
+static AppUser? currentUser;
+
+static final  GetStorage authBox=GetStorage();
+
+initDB(){
+
+ var userData= authBox.read('user');
+
+ print("************************* userData  $userData");
+if(userData !=null){
+ var decode=json.decode(userData);
+
+ currentUser=AppUser.fromJson(decode);
+
+}
+}
 
 static get favItemsList=>allProducts.where((element) => element.fav>0).toList();
 
- static List<Product> allProducts=[
+ static List<Item> allProducts=[
   //
   // Item(
   //     name: "شوكولاتة مليكا",
@@ -75,6 +98,22 @@ static get favItemsList=>allProducts.where((element) => element.fav>0).toList();
  ];
 
 
+
+ buildToastMsg({String msg='',bool success=false}){
+
+
+  Fluttertoast.showToast(
+      msg: msg,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.SNACKBAR,
+      timeInSecForIosWeb: 1,
+      backgroundColor:success?Colors.green: Colors.red,
+      textColor: Colors.white,
+      fontSize: 16.0
+  );
+
+
+ }
 
 
 }

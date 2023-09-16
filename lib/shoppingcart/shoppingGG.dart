@@ -72,7 +72,7 @@ class _shoppingGGState extends State<shoppingGG> {
                                 height: 90,
                                 width: 90,
                                 child: Image.network(
-                                  BaseController.cartItems[index].image??'',
+                                  BaseController.cartItems[index].product!.image??'',
                                   fit: BoxFit.fill,
                                 ),
                               ),
@@ -94,7 +94,7 @@ class _shoppingGGState extends State<shoppingGG> {
                                             children: [
                                               Expanded(
                                                 child: Text(
-                                                  BaseController.cartItems[index].title!,
+                                                  BaseController.cartItems[index].product!.name!,
                                                   style: TextStyle(
                                                     fontWeight: FontWeight.w800,
                                                     fontSize: 18,

@@ -1,16 +1,17 @@
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
-import 'package:sell/Item/item.dart';
+import 'package:sell/models/item.dart';
 import 'package:sell/const/app_styles.dart';
-import 'package:sell/data/models/product.dart';
+// import 'package:sell/data/models/product.dart';
 
 import '../Navigation/navigation.dart';
 import '../base_controller.dart';
 import '../const/app_colors.dart';
+import '../data/local/local_db.dart';
 
 class BottomsheetDitels extends StatefulWidget {
   const BottomsheetDitels({Key? key,required this.item}) : super(key: key);
-final  Product item;
+final  Item item;
   @override
   State<BottomsheetDitels> createState() => _BottomsheetDitelsState();
 
@@ -33,7 +34,7 @@ class _BottomsheetDitelsState extends State<BottomsheetDitels> {
                   Row(
                     children: [
                       Expanded(
-                        child: Text(" ${widget.item.title}",style:TextStyle(color: Colors.black,
+                        child: Text(" ${widget.item.product!.name}",style:TextStyle(color: Colors.black,
                           fontSize: 20,fontWeight: FontWeight.bold,),),
                       ),
                     ],
@@ -97,7 +98,7 @@ class _BottomsheetDitelsState extends State<BottomsheetDitels> {
                     children: [
 
 
-                      Expanded(child: Text('كيلو ',style: AppStyles.primaryStyle(bold: true,fontSize: 25),))
+                      Expanded(child: Text('${widget.item.unit} ',style: AppStyles.primaryStyle(bold: true,fontSize: 16),))
 ,
                       GestureDetector(
 
@@ -119,8 +120,7 @@ class _BottomsheetDitelsState extends State<BottomsheetDitels> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text('${  BaseController
-                                .allProducts[index].price
+                                Text('${  widget.item.unitPrice
                                 .toString() +
                                 ' ر.ي '} ',textAlign: TextAlign.center,style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),
                                 // SizedBox(width: 20,),
@@ -135,22 +135,20 @@ class _BottomsheetDitelsState extends State<BottomsheetDitels> {
                       GestureDetector(
 
                           onTap: (){
+
+
+
                             if(!BaseController.cartItems.contains(widget.item)) {
+
+                              LocalDB.saveItem(widget.item);
+
+
                               BaseController.cartItems.add(widget.item);
-                                    var snackdemo = SnackBar(
-                                      content: Text('${widget.item.title} '),
-                                      backgroundColor: Colors.green,
-                                      elevation: 10,
-                                      behavior: SnackBarBehavior.floating,
-                                      margin: EdgeInsets.all(5),
-                                    );
-                                    // ScaffoldMessenger.of(context).showSnackBar  (snackdemo,);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('تمت الإضافة الى السلة'),
-                                    behavior: SnackBarBehavior.floating,
 
 
-                                  ));
+                              BaseController().buildToastMsg(msg: 'تمت الإضافة الى السلة',success: true);
+
+                              Navigator.pop(context);
 
                             }
                           },
@@ -219,7 +217,7 @@ class _BottomsheetDitelsState extends State<BottomsheetDitels> {
   }
 }
 
-void ShowModalBottomSheetDitels(BuildContext context,Product item) {
+void ShowModalBottomSheetDitels(BuildContext context,Item item) {
   showModalBottomSheet(
     context: context,
     //  isScrollControlled: true,

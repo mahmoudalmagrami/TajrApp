@@ -1,12 +1,19 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:flutter/material.dart';
+import 'package:sell/SingIn/sign_in.dart';
+import 'package:sell/base_controller.dart';
 import 'package:sell/const/app_colors.dart';
 import 'package:sell/const/app_styles.dart';
+import 'package:sell/models/address.dart';
 
 
 import '../../shoppingcart/Check_order/check_order.dart';
 
-import '../base_controller.dart';
+import '../app_const/app_images.dart';
+// import '../base_controller.dart';
+import '../data/local/local_db.dart';
+import '../models/item.dart';
 
 class shopping extends StatefulWidget {
   const shopping({Key? key}) : super(key: key);
@@ -16,8 +23,29 @@ class shopping extends StatefulWidget {
 }
 
 class _shoppingState extends State<shopping> {
+
+
+
+  List<Item> cartItems=[];
+  getCartItems()async{
+
+    cartItems= await LocalDB.readItems(key: LocalDB.cartKey);
+
+    setState(() {
+
+    });
+
+  }
+
+@override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getCartItems();
+  }
   @override
   Widget build(BuildContext context) {
+    getCartItems();
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
@@ -50,10 +78,10 @@ class _shoppingState extends State<shopping> {
                               //width: 450,
                               child: Column(
                                 children: [
-                                  BaseController.cartItems.isNotEmpty
+                                  cartItems.isNotEmpty
                                       ? Expanded(
                                           child: ListView.builder(
-                                              itemCount: BaseController.cartItems.length,
+                                              itemCount: cartItems.length,
                                               physics:
                                                   const NeverScrollableScrollPhysics(),
                                               shrinkWrap: true,
@@ -70,31 +98,122 @@ class _shoppingState extends State<shopping> {
                                                     // color: AppColors.backgroundicon,
                                                     padding: EdgeInsets.only(
                                                         right: 16),
-                                                    height: 110,
+                                                    height: 130,
                                                     child: Row(
                                                       textDirection:
                                                           TextDirection.rtl,
                                                       children: [
-                                                        Container(
-                                                          height: 90,
-                                                          width: 90,
-                                                          child: Image.network(
-                                                            BaseController
-                                                                .cartItems[
-                                                                    index]
-                                                                .image??'',
-                                                            fit: BoxFit.fill,
-                                                          ),
+                                                        Column(
+                                                          children: [
+                                                            SizedBox(height: 10,),
+                                                            Container(
+                                                              height: 80,
+                                                              width: 80,
+                                                              decoration: BoxDecoration(
+                                                                borderRadius: BorderRadius.circular(20),
+
+                                                              ),
+                                                              child:
+                                                              ClipRRect(
+                                                                borderRadius: BorderRadius.circular(20),
+                                                                child: CachedNetworkImage(
+                                                                  imageUrl: cartItems[index].product!.image!,
+                                                                  placeholder: (context, url) => ClipRRect(
+                                                                      borderRadius: BorderRadius.circular(20),
+
+                                                                      child: Image.asset(AppImages.logo)),
+                                                                  errorWidget: (context, url, error) => Image.asset(AppImages.logo),
+                                                                ),
+                                                              ),
+
+                                                            ),
+                                                            SizedBox(height: 5,),
+
+                                                            Row(
+                                                              mainAxisAlignment:
+                                                              MainAxisAlignment.start,
+                                                              children: [
+                                                                Container(
+                                                                  height:
+                                                                  30,
+                                                                  padding:
+                                                                  EdgeInsets.only(left: 0.0),
+                                                                  child:
+                                                                  Row(
+                                                                    children: [
+                                                                      Container(
+                                                                        // width: 100,
+                                                                        decoration: BoxDecoration(
+                                                                          color: Colors.white,
+                                                                          border: Border.all(width: 1, color: AppColors.iconcolor //                   <--- border width here
+                                                                          ),
+                                                                          borderRadius: BorderRadius.circular(20),
+                                                                        ),
+                                                                        child: Row(
+
+                                                                          children: [
+                                                                            IconButton(
+                                                                              onPressed: () {
+                                                                                if (cartItems[index].quantity > 1) {
+                                                                                  cartItems[index].quantity -= 1;
+                                                                                  LocalDB.updateItem(cartItems[index]);
+
+                                                                                  setState(() {});
+                                                                                }
+                                                                              },
+                                                                              icon: const Icon(
+                                                                                Icons.remove,
+                                                                                color: Colors.black,
+                                                                                size: 15,
+                                                                              ),
+                                                                            ),
+                                                                            Text(
+                                                                              '${cartItems[index].quantity}',
+                                                                              style: AppStyles.primaryStyle(
+                                                                                color: Colors.black,
+
+                                                                              ),
+                                                                            ),
+                                                                            IconButton(
+                                                                              onPressed: () {
+
+                                                                                // print(cartItems[index].remainingQuantity);
+                                                                                cartItems[index].quantity += 1;
+                                                                                LocalDB.updateItem(cartItems[index]);
+
+                                                                                setState(() {});
+
+
+
+                                                                              },
+
+                                                                              icon: const Icon(
+                                                                                Icons.add,
+                                                                                color: Colors.black,
+                                                                                size: 15,
+                                                                              ),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+
+                                                          ],
                                                         ),
                                                         Expanded(
-                                                          child: Padding(
+                                                          child: Container(
+                                                            // color: AppColors.primaryColor,
                                                             padding:
                                                                 EdgeInsets.only(
-                                                              top: 16,
+                                                              top: 6,
                                                               right: 16,
                                                             ),
                                                             child: SizedBox(
-                                                              height: 100,
+                                                              height: 200,
                                                               child: Column(
                                                                 textDirection:
                                                                     TextDirection
@@ -109,7 +228,8 @@ class _shoppingState extends State<shopping> {
                                                                         Expanded(
                                                                           child:
                                                                               Text(
-                                                                            BaseController.cartItems[index].title!,
+                                                                            cartItems[index].product!.name!,
+                                                                            maxLines: 2,
                                                                             style:
                                                                                 TextStyle(
                                                                               fontWeight: FontWeight.w800,
@@ -126,87 +246,51 @@ class _shoppingState extends State<shopping> {
                                                                           ),
                                                                           onPressed:
                                                                               () {
-                                                                            BaseController.cartItems.removeAt(index);
+                                                                                LocalDB.removeItem(cartItems [index],);
                                                                             setState(() {});
                                                                           },
                                                                         )
                                                                       ],
                                                                     ),
                                                                   ),
-                                                                  Row(
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment.start,
-                                                                    children: [
-                                                                      Container(
-                                                                        height:
-                                                                            30,
-                                                                        padding:
-                                                                            EdgeInsets.only(left: 0.0),
-                                                                        child:
-                                                                            Row(
-                                                                          children: [
-                                                                            Container(
-                                                                              decoration: BoxDecoration(
-                                                                                color: Colors.white,
-                                                                                border: Border.all(width: 1, color: AppColors.iconcolor //                   <--- border width here
-                                                                                    ),
-                                                                                borderRadius: BorderRadius.circular(20),
-                                                                              ),
-                                                                              child: Row(
-                                                                                children: [
-                                                                                  IconButton(
-                                                                                    onPressed: () {
-                                                                                      if (BaseController.cartItems[index].quantity > 1) {
-                                                                                        BaseController.cartItems[index].quantity -= 1;
-                                                                                        setState(() {});
-                                                                                      }
-                                                                                    },
-                                                                                    icon: const Icon(
-                                                                                      Icons.remove,
-                                                                                      color: Colors.black,
-                                                                                      size: 15,
-                                                                                    ),
-                                                                                  ),
-                                                                                  const SizedBox(width: 4),
-                                                                                  Text(
-                                                                                    '${BaseController.cartItems[index].quantity}',
-                                                                                    style: AppStyles.primaryStyle(
-                                                                                      color: Colors.black,
-                                                                                    ),
-                                                                                  ),
-                                                                                  const SizedBox(width: 4),
-                                                                                  IconButton(
-                                                                                    onPressed: () {
-                                                                                      BaseController.cartItems[index].quantity += 1;
-                                                                                      setState(() {});
-                                                                                    },
-                                                                                    icon: const Icon(
-                                                                                      Icons.add,
-                                                                                      color: Colors.black,
-                                                                                      size: 15,
-                                                                                    ),
-                                                                                  ),
-                                                                                ],
-                                                                              ),
-                                                                            ),
-                                                                          ],
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
 
                                                                   Container(
                                                                     padding: EdgeInsets.only(left: 20),
                                                                     alignment: Alignment.centerLeft,
-                                                                    child: Text(
-                                                                      BaseController
-                                                                          .cartItems[index].price
-                                                                          .toString()+
-                                                                          ' ر.ي ',
-                                                                      style: TextStyle(
-                                                                        fontWeight: FontWeight.w800,
-                                                                        color: AppColors.primaryColor,
-                                                                      ),
+                                                                    child: Row(
+                                                                      children: [
+                                                                        Text("سعر الوحدة : "),
+                                                                        Text(
+
+                                                                          cartItems[index].unitPrice
+                                                                              .toString()+
+                                                                              ' ر.ي ',
+                                                                          style: TextStyle(
+                                                                            fontWeight: FontWeight.w800,
+                                                                            color: AppColors.primaryColor,
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                  Container(
+                                                                    padding: EdgeInsets.only(left: 20),
+                                                                    alignment: Alignment.centerLeft,
+                                                                    child: Row(
+                                                                      children: [
+                                                                        Text("السعر الفرعي  : "),
+                                                                        Text(
+                                                                            (double.parse(
+                                                                              cartItems[index].unitPrice
+                                                                              .toString())*
+                                                                                cartItems[index].quantity) .toStringAsFixed(2)+
+                                                                              ' ر.ي ',
+                                                                          style: TextStyle(
+                                                                            fontWeight: FontWeight.w800,
+                                                                            color: AppColors.primaryColor,
+                                                                          ),
+                                                                        ),
+                                                                      ],
                                                                     ),
                                                                   ),
                                                                   SizedBox(
@@ -269,23 +353,43 @@ class _shoppingState extends State<shopping> {
                     borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(15.0),
                         topRight: Radius.circular(15.0))),
+                margin: EdgeInsets.symmetric(vertical: 20),
                 height: 50,
                 child: Center(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                        backgroundColor:BaseController.cartItems.isNotEmpty? AppColors.iconcolor:AppColors.disableColor,
+                        backgroundColor:cartItems.isNotEmpty? AppColors.iconcolor:AppColors.disableColor,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.all(
                           Radius.circular(15),
                         ))),
                     onPressed: () {
 
-                      if(BaseController.cartItems.isNotEmpty){
+                      if(cartItems.isNotEmpty){
+
+                        if(BaseController.currentUser !=null){
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => Check_order(),
+                          builder: (context) => Check_order(cartItems: cartItems,),
                         ),
-                      );}else{
+                      );
+
+                        }
+                        else{
+                          BaseController().buildToastMsg(msg: 'يجب تسجيل الدخول');
+
+                          Future.delayed((Duration(seconds: 1)),(){
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => SignIn(),
+                              ),
+                            );
+                          });
+
+                        }
+
+
+                      }else{
                         ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('السلة فارغة'),
                               behavior: SnackBarBehavior.floating,
@@ -341,77 +445,6 @@ class _shoppingState extends State<shopping> {
             ),
           ],
         ),
-        Positioned(
-          left: 37,
-          child: Container(
-            height: 77,
-            width: 340,
-            decoration: BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: Color.fromRGBO(47, 125, 121, 0.3),
-                ),
-              ],
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: Column(
-              children: [
-                // SizedBox(height: 8),
-
-                SizedBox(height: 12),
-
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 19,
-                            backgroundColor: AppColors.backgroundicon,
-                            child: Icon(
-                              Iconsax.location4,
-                              color: AppColors.iconcolor,
-                              size: 19,
-                            ),
-                          ),
-                          SizedBox(width: 7),
-                          Text(
-                            'العنوان',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                              color: AppColors.primaryColor,
-                            ),
-                          ),
-                          SizedBox(width: 7),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.arrow_back_ios_new,
-                            color: AppColors.iconcolor,
-                            size: 19,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 6),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  ),
-                )
-              ],
-            ),
-          ),
-        )
       ],
     );
   }

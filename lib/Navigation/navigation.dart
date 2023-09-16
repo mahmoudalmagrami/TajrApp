@@ -4,6 +4,7 @@ import 'package:sell/AccountPage/test.dart';
 import 'package:sell/HomeScreen/home_screen.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../base_controller.dart';
 import '../const/app_colors.dart';
 import '../favoritePage/Favorite.dart';
 import '../screen/bottomsheet.dart';
@@ -29,7 +30,13 @@ class _NavigationState extends State<Navigation> {
       _selectedIndex = index;
     });
   }
+@override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+     BaseController().initDB();
 
+}
   @override
   Widget build(BuildContext context) {
     // List<Item> searchList = ITEM_LIST

@@ -4,6 +4,7 @@ import 'package:iconsax/iconsax.dart';
 
 
 import '../AccountPage/widgets/profile_item.dart';
+import '../utils/launcher.dart';
 
 class Bottomsheet extends StatefulWidget {
   const Bottomsheet({Key? key}) : super(key: key);
@@ -45,6 +46,7 @@ class _BottomsheetState extends State<Bottomsheet> {
               iconData: Iconsax.call4,
               onTab: () {
 
+                Launcher.phoneCall('+967 777812182');
 
                 print("test");
               },
@@ -55,6 +57,7 @@ class _BottomsheetState extends State<Bottomsheet> {
               iconData: Iconsax.call4,
               onTab: () {
 
+                Launcher.phoneCall('+967 717502063');
 
                 print("test");
               },
@@ -63,6 +66,7 @@ class _BottomsheetState extends State<Bottomsheet> {
               title: "+967 144802",
               iconData: Iconsax.call4,
               onTab: () {
+                Launcher.phoneCall('+967 144802');
 
 
                 print("test");

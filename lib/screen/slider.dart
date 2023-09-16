@@ -1,5 +1,12 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:sell/HomeScreen/offer_store_page.dart';
+import 'package:sell/const/app_colors.dart';
+import 'package:sell/const/app_styles.dart';
+
+import '../app_const/app_images.dart';
+import '../models/offer.dart';
 void main() {
   runApp( CarouselDemo());
 }
@@ -22,7 +29,7 @@ class CarouselDemo extends StatelessWidget {
       builder: (context, value, g) {
         return MaterialApp(
 
-          home: EnlargeStrategyDemo(),
+          // home: EnlargeStrategyDemo(),
 
           debugShowCheckedModeBanner: false,
 
@@ -110,6 +117,12 @@ final List<Widget> imageSliders = imgList
 
 
 class EnlargeStrategyDemo extends StatelessWidget {
+  const EnlargeStrategyDemo({super.key,required this.offers});
+
+
+ final List<Offer> offers;
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -125,10 +138,109 @@ class EnlargeStrategyDemo extends StatelessWidget {
             //viewportFraction: 1,
             enlargeStrategy: CenterPageEnlargeStrategy.height,
           ),
-          items: imageSliders,
+          items: getOfferWidget(context),
         ),
       ),
     );
   }
+
+  getOfferWidget(BuildContext context){
+
+    return offers
+        .map((item) => Container(
+      // color: Colors.amber,
+      height: 250,
+      margin: EdgeInsets.all(5.0),
+      child: ClipRRect(
+
+          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+          child: Stack(
+            children: <Widget>[
+              Container(
+                color: AppColors.backgroundicon,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: CachedNetworkImage(
+                    imageUrl: item.image ??'',width: 1000,
+                    fit: BoxFit.fill,
+                    placeholder: (context, url) => ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+
+                        child: Image.asset(AppImages.logo,width: 1000,
+                          fit: BoxFit.fill,
+
+                        )),
+                    errorWidget: (context, url, error) => Image.asset(AppImages.logo,width: 1000,
+                      fit: BoxFit.fill,
+
+                    ),
+                  ),
+                ),
+              ),
+
+              Positioned(
+                  bottom: 10,
+                  right: 5,
+                  left: 5,
+
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+
+
+                    GestureDetector(
+                      onTap: (){
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => OfferStorePage(offer: item),
+                          ),
+                        );
+
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 40),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryColor,borderRadius: BorderRadius.circular(20),
+
+                        ),
+
+                        child: Text('تفاصيل العرض',style: AppStyles.primaryStyle(bold: true,fontSize: 14,color: AppColors.white),),
+
+                      ),
+                    )
+
+                ],
+              ),
+                  )),
+
+              // Positioned(
+              //   bottom: 0.0,
+              //   left: 0.0,
+              //   right: 0.0,
+              //   child: Container(
+              //     decoration: BoxDecoration(
+              //       gradient: LinearGradient(
+              //         colors: [
+              //           Color.fromARGB(20, 0, 0, 0),
+              //           Color.fromARGB(0, 0, 0, 0)
+              //         ],
+              //         begin: Alignment.bottomCenter,
+              //         end: Alignment.topCenter,
+              //       ),
+              //     ),
+              //     padding: EdgeInsets.symmetric(
+              //         vertical: 10.0, horizontal: 20.0),
+              //
+              //   ),
+              // ),
+            ],
+          )),
+    ))
+        .toList();
+  }
+
 }
 
